@@ -1,0 +1,970 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#102746">
+    <title>ProofLearn | Lecturer Workspace</title>
+    <style>
+        :root {
+            --n: #102746;
+            --b: #2f6fed;
+            --ink: #1b293b;
+            --muted: #68788d;
+            --line: #e1e8f1;
+            --bg: #f4f7fb
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font: 14px system-ui, -apple-system, "Segoe UI", sans-serif
+        }
+
+        .app {
+            min-height: 100vh;
+            display: flex
+        }
+
+        .side {
+            width: 235px;
+            background: var(--n);
+            color: white;
+            padding: 22px 15px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 8px 25px
+        }
+
+        .logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: white;
+            color: var(--n);
+            display: grid;
+            place-items: center;
+            font-weight: 900;
+            font-size: 23px
+        }
+
+        .brand b {
+            font-size: 17px
+        }
+
+        .brand small {
+            display: block;
+            color: #b9c9dc;
+            font-size: 11px;
+            margin-top: 3px
+        }
+
+        .nav {
+            display: grid;
+            gap: 6px
+        }
+
+        .nav button {
+            border: 0;
+            border-radius: 9px;
+            background: transparent;
+            color: #cbd7e5;
+            text-align: left;
+            padding: 12px;
+            font-weight: 650
+        }
+
+        .nav button.active,
+        .nav button:hover {
+            background: #244366;
+            color: white
+        }
+
+        .nav span {
+            display: inline-block;
+            width: 24px
+        }
+
+        .side-note {
+            margin-top: auto;
+            background: #1b395c;
+            border: 1px solid #315071;
+            border-radius: 11px;
+            padding: 14px;
+            font-size: 11px;
+            line-height: 1.6;
+            color: #c7d4e3
+        }
+
+        .side-note b {
+            color: white
+        }
+
+        .side small.foot {
+            color: #a9bad0
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 0 28px 22px
+        }
+
+        .top {
+            height: 68px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 26px
+        }
+
+        .crumb {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #dce9ff;
+            color: var(--n);
+            display: grid;
+            place-items: center
+        }
+
+        .menu {
+            display: none;
+            border: 0;
+            background: none;
+            font-size: 22px;
+            color: var(--n)
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 0 auto 28px
+        }
+
+        .hidden {
+            display: none !important
+        }
+
+        .head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 22px
+        }
+
+        .eyebrow {
+            color: var(--b);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            margin: 0 0 7px
+        }
+
+        .head h1 {
+            color: var(--n);
+            font-size: clamp(25px, 3vw, 33px);
+            letter-spacing: -.7px;
+            margin: 0 0 8px
+        }
+
+        .muted {
+            color: var(--muted);
+            line-height: 1.65;
+            margin: 0
+        }
+
+        .small {
+            font-size: 11px
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 9px;
+            padding: 11px 14px;
+            font-size: 12px;
+            font-weight: 750;
+            cursor: pointer
+        }
+
+        .primary {
+            background: var(--b);
+            color: white
+        }
+
+        .secondary {
+            background: #edf3fc;
+            color: var(--n);
+            border: 1px solid #d9e4f5
+        }
+
+        .quiet {
+            background: transparent;
+            color: var(--muted)
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 18px
+        }
+
+        .stat,
+        .panel {
+            background: white;
+            border: 1px solid var(--line);
+            border-radius: 13px;
+            box-shadow: 0 8px 25px #1027460a
+        }
+
+        .stat {
+            padding: 18px
+        }
+
+        .stat span {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 650
+        }
+
+        .stat strong {
+            display: block;
+            color: var(--n);
+            font-size: 29px;
+            margin: 9px 0 3px
+        }
+
+        .stat small {
+            color: #8491a2;
+            font-size: 11px
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 17px
+        }
+
+        .panel {
+            padding: 20px
+        }
+
+        .panel h2,
+        .panel h3 {
+            color: var(--n);
+            margin: 0 0 8px
+        }
+
+        .panel h2 {
+            font-size: 18px;
+        }
+
+        .panel h3 {
+            font-size: 15px
+        }
+
+        .panel-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+
+        .pill {
+            font-size: 10px;
+            font-weight: 750;
+            padding: 6px 9px;
+            border-radius: 20px;
+            background: #eef3fa;
+            color: #52647c;
+        }
+
+        .review-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 0;
+            border-bottom: 1px solid #edf0f5
+        }
+
+        .review-row:last-child {
+            border: 0;
+        }
+
+        .doc {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            background: #edf4ff;
+            color: #426bb2;
+            display: grid;
+            place-items: center;
+            font-size: 9px;
+            font-weight: 900;
+            flex-shrink: 0
+        }
+
+        .review-info {
+            min-width: 0;
+            flex: 1
+        }
+
+        .review-info b {
+            display: block;
+            font-size: 12px;
+            overflow-wrap: anywhere
+        }
+
+        .review-info small {
+            display: block;
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 4px
+        }
+
+        .status {
+            font-size: 9px;
+            font-weight: 800;
+            padding: 6px 8px;
+            border-radius: 20px;
+            background: #fff2dc;
+            color: #93600e;
+            white-space: nowrap
+        }
+
+        .done {
+            background: #e3f6ec;
+            color: #177451;
+        }
+
+        .guidance {
+            background: linear-gradient(145deg, #fff, #f5f8ff)
+        }
+
+        .guidance p {
+            font-size: 12px;
+            line-height: 1.7;
+            color: var(--muted)
+        }
+
+        .guidance ul {
+            padding-left: 18px;
+            font-size: 11px;
+            line-height: 2;
+            color: #425269
+        }
+
+        .notice,
+        .warning,
+        .demo-warning {
+            border-radius: 10px;
+            padding: 13px 15px;
+            margin-bottom: 16px;
+            font-size: 11px;
+            line-height: 1.65
+        }
+
+        .notice {
+            background: #eff5ff;
+            border: 1px solid #d9e7ff;
+            color: #355276;
+            display: flex;
+            gap: 10px
+        }
+
+        .notice p {
+            margin: 0
+        }
+
+        .demo-warning {
+            background: #fff5e6;
+            border: 1px solid #f1d8b2;
+            color: #76531d;
+        }
+
+        .warning {
+            background: #fff8e9;
+            border: 1px solid #f3e2bd;
+            color: #735016;
+        }
+
+        .form {
+            display: grid;
+            gap: 16px;
+        }
+
+        .formgrid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 14px
+        }
+
+        label {
+            display: grid;
+            gap: 8px;
+            color: #35445a;
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: 1px solid #dbe2ec;
+            border-radius: 9px;
+            padding: 12px;
+            background: white;
+            color: var(--ink);
+            font: inherit;
+            font-size: 12px;
+            outline: none;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #6a9aff;
+            box-shadow: 0 0 0 3px #2f6fed16
+        }
+
+        textarea {
+            resize: vertical;
+            line-height: 1.6;
+            min-height: 80px;
+        }
+
+        #assignmentText {
+            min-height: 170px
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .actions .push {
+            margin-left: auto
+        }
+
+        .report {
+            margin-top: 25px;
+        }
+
+        .reporthead {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .reporthead h2 {
+            margin: 0 0 6px;
+            color: var(--n);
+            font-size: 22px;
+        }
+
+        .reportgrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .finding {
+            padding: 12px 0;
+            border-bottom: 1px solid #edf0f5
+        }
+
+        .finding:last-child {
+            border: 0;
+        }
+
+        .finding b {
+            font-size: 12px;
+        }
+
+        .finding p {
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.6;
+            margin: 6px 0 0 15px;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #dca33b;
+            margin-right: 8px;
+        }
+
+        .good .dot {
+            background: #29966e;
+        }
+
+        .questions {
+            padding-left: 20px;
+        }
+
+        .questions li {
+            font-size: 12px;
+            line-height: 1.6;
+            padding-bottom: 11px;
+        }
+
+        .full {
+            width: 100%;
+        }
+
+        .notes {
+            display: grid;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .plan-grid,
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .price {
+            font-size: 27px;
+            font-weight: 850;
+            color: var(--n);
+            margin: 14px 0 4px;
+        }
+
+        .plan ul {
+            font-size: 12px;
+            line-height: 2.1;
+            color: #425269;
+            padding-left: 18px;
+        }
+
+        .pay-number {
+            font-size: 23px;
+            font-weight: 850;
+            color: var(--n);
+            margin: 12px 0;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .admin-stat {
+            padding: 15px;
+            background: #f5f8fc;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .admin-stat strong {
+            display: block;
+            font-size: 21px;
+            color: var(--n);
+            margin-top: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            border-top: 1px solid var(--line);
+            padding: 18px 4px 5px;
+            color: #8390a1;
+            font-size: 10px;
+            line-height: 1.8;
+            margin-top: 28px;
+        }
+
+        .footer b {
+            color: var(--n);
+        }
+
+        @media(max-width:850px) {
+            .side {
+                width: 210px
+            }
+
+            .main {
+                padding: 0 18px 20px
+            }
+
+            .layout {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media(max-width:640px) {
+            .app {
+                display: block
+            }
+
+            .side {
+                position: fixed;
+                z-index: 10;
+                top: 0;
+                bottom: 0;
+                left: -250px;
+                width: 235px;
+                transition: left .2s;
+                box-shadow: 12px 0 30px #0002
+            }
+
+            .side.open {
+                left: 0
+            }
+
+            .main {
+                padding: 0 12px 18px;
+            }
+
+            .top {
+                height: 60px;
+                margin-bottom: 22px;
+            }
+
+            .menu {
+                display: block;
+            }
+
+            .crumb {
+                font-size: 10px;
+            }
+
+            .user span {
+                display: none;
+            }
+
+            .head {
+                flex-direction: column;
+            }
+
+            .head>.btn {
+                width: 100%;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 9px;
+            }
+
+            .stat {
+                padding: 14px;
+            }
+
+            .stat strong {
+                font-size: 25px;
+                margin: 5px 0 1px;
+            }
+
+            .layout,
+            .formgrid,
+            .reportgrid,
+            .plan-grid,
+            .guide-grid,
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .panel {
+                padding: 16px;
+            }
+
+            .review-row {
+                flex-wrap: wrap;
+            }
+
+            .status {
+                margin-left: 46px;
+            }
+
+            .actions .push {
+                margin-left: 0;
+                flex-basis: 100%;
+            }
+
+            .actions .btn {
+                flex: 1;
+            }
+
+            .reporthead {
+                flex-direction: column
+            }
+
+            .reporthead .btn {
+                width: 100%
+            }
+        }
+
+        @media print {
+
+            .side,
+            .top,
+            .head,
+            .notice,
+            .form,
+            .footer,
+            .reporthead .btn {
+                display: none !important
+            }
+
+            .main {
+                padding: 0
+            }
+
+            .page.hidden {
+                display: none !important
+            }
+
+            .report {
+                display: block !important
+            }
+
+            .panel {
+                box-shadow: none;
+                break-inside: avoid;
+            }
+        }
+    
+        .smooth-image {
+            border-radius: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app">
+        <aside class="side" id="sidebar">
+            <div class="brand">
+                <div class="logo"><img src="c:\Users\TREVOR\Downloads\prooflearnimage.jpeg" alt="ProofLearn Logo"
+                        width="190" height="70" class="smooth-image">
+
+                </div>
+            </div>
+            <nav class="nav">
+                <button class="active" data-page="dashboard">
+                    <span>▦</span>Lecturer dashboard</button>
+                <button data-page="review"><span>▤</span>Review assignment</button>
+                <button data-page="guide">
+                    <span>ⓘ</span>Responsible AI guide</button>
+            </nav>
+            <div class="side-note"><b>Fair review, better learning</b><br>AI-use indicators are not proof of misconduct.
+                Use evidence, conversation, and your institution's policy.</div>
+            <div style="font-size:10px;color:#a9bad0;margin:18px 8px 0">Lecturer demo · Sample data only</div>
+        </aside>
+        <main class="main">
+            <header class="top"><button class="menu" id="menu">☰</button>
+                <div class="crumb">ProofLearn / <b id="crumb">Lecturer dashboard</b></div>
+                <div class="user">
+                    <div class="avatar">LT</div><span>Lecturer demo</span>
+                </div>
+            </header>
+            <section class="page" id="page-dashboard">
+                <div class="head">
+                    <div>
+                        <p class="eyebrow">LECTURER OVERVIEW</p>
+                        <h1>Lecturer dashboard</h1>
+                        <p class="muted">Review student work fairly and support responsible AI use.</p>
+                    </div>
+                    <button class="btn primary" data-go="review">＋ New assignment review</button>
+                </div>
+                <div class="stats">
+                    <article class="stat"><span>Reviews started</span><strong id="reviewCount">03</strong><small>In this
+                            demo session</small>
+                    </article>
+                    <article class="stat"><span>Follow-ups suggested</span><strong>01</strong><small>Lecturer check-in
+                            recommended</small></article>
+                    <article class="stat"><span>Understanding questions</span><strong
+                            id="questionCount">15</strong><small>Across sample reviews</small></article>
+                </div>
+                <div class="layout">
+                    <article class="panel">
+                        <div class="panel-head">
+                            <div>
+                                <h2>Recent reviews</h2>
+                                <p class="muted small">Sample activity only</p>
+                            </div><span class="pill">Demo data</span>
+                        </div>
+                        <div id="recent">
+                            <div class="review-row">
+                                <div class="doc">DOC</div>
+                                <div class="review-info"><b>Introduction to Learning Theories</b><small>Student:
+                                        DEMO-001 · Today</small></div><span class="status">Follow-up suggested</span>
+                            </div>
+                            <div class="review-row">
+                                <div class="doc">DOC</div>
+                                <div class="review-info"><b>Information Systems Overview</b><small>Student: DEMO-002 ·
+                                        Yesterday</small></div><span class="status done">Reviewed</span>
+                            </div>
+                        </div><button class="btn quiet" data-go="review">Start a new review →</button>
+                    </article>
+                    <article class="panel guidance">
+                        <p class="eyebrow">RESPONSIBLE AI</p>
+                        <h2>Evidence over assumptions</h2>
+                        <p>No text-based detector can reliably prove that a student used AI. Check citations, ask the
+                            student to explain their reasoning, and apply university policy consistently.</p>
+                        <ul>
+                            <li>Check sources and factual claims.</li>
+                            <li>Ask students to explain key ideas.</li>
+                            <li>Offer a fair opportunity to respond.</li>
+                        </ul><button class="btn secondary" data-go="guide">Read review principles</button>
+                    </article>
+                </div>
+            </section>
+            <section class="page hidden" id="page-review">
+                <div class="head">
+                    <div>
+                        <p class="eyebrow">ASSIGNMENT WORKSPACE</p>
+                        <h1>Review an assignment</h1>
+                        <p class="muted">Use fictional or sample content for this prototype.</p>
+                    </div><span class="pill">Runs locally</span>
+                </div>
+                <div class="notice"><b>i</b>
+                    <p><b>Privacy note:</b> this one-file prototype processes text in your browser only. It does not
+                        send text to an AI service or save it to a server. Do not enter real student personal
+                        information.</p>
+                </div>
+                <form class="panel form" id="form">
+                    <div class="formgrid"><label>Student identifier (optional)<input id="student" maxlength="40"
+                                placeholder="e.g. DEMO-004"></label><label>Assignment title *<input id="title" required
+                                maxlength="120" placeholder="e.g. Explain two learning theories"></label></div>
+                    <label>Assignment instructions (optional)<textarea id="instructions" rows="3"
+                            placeholder="What did the assignment ask the student to do?"></textarea></label><label>Student's
+                        submitted text *<textarea id="text" required
+                            placeholder="Paste fictional/sample assignment text here..."></textarea></label>
+                    <div class="actions"><button type="button" class="btn secondary" id="sample">Load sample
+                            assignment</button><button type="reset" class="btn quiet" id="clear">Clear</button><button
+                            type="submit" class="btn primary push">Generate review report →</button></div>
+                </form>
+                <div class="report hidden" id="report">
+                    <div class="reporthead">
+                        <div>
+                            <p class="eyebrow">REVIEW OUTPUT</p>
+                            <h2 id="reportTitle">Assignment report</h2>
+                            <p class="muted small" id="meta"></p>
+                        </div><button class="btn secondary" id="print">Print / Save PDF</button>
+                    </div>
+                    <div class="warning"><b>ⓘ These observations are prompts for further checking, not a
+                            verdict.</b><br>This prototype uses basic local rules. It does not detect AI authorship or
+                        verify sources online.</div>
+                    <div class="reportgrid">
+                        <article class="panel">
+                            <h3>Review indicators</h3>
+                            <p class="muted small">Transparent rule-based observations.</p>
+                            <div id="findings"></div>
+                        </article>
+                        <article class="panel">
+                            <h3>Questions to check understanding</h3>
+                            <p class="muted small">Ask the student to explain their reasoning in their own words.</p>
+                            <ol class="questions" id="questions"></ol><button class="btn secondary full" id="copy">Copy
+                                questions</button>
+                        </article>
+                    </div>
+                    <article class="panel notes">
+                        <div>
+                            <h3>Lecturer notes</h3>
+                            <p class="muted small">Notes stay in this page and are not securely saved.</p>
+                        </div><textarea id="notes" rows="4"
+                            placeholder="Record follow-up questions, sources to verify, or the student's explanation..."></textarea>
+                        <div class="between"><span class="muted small">Not saved to a server</span><button
+                                class="btn secondary" id="download">Download report (.txt)</button></div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="page hidden" id="page-guide">
+                <div class="head">
+                    <div>
+                        <p class="eyebrow">REVIEW PRINCIPLES</p>
+                        <h1>Responsible AI review guide</h1>
+                        <p class="muted">Support learning, not automatic accusations.</p>
+                    </div>
+                </div>
+                <div class="guide-grid">
+                    <article class="panel">
+                        <h2>01 · Check the evidence</h2>
+                        <p class="muted">Verify citations and claims directly. This prototype cannot check whether a
+                            source exists or supports a claim.</p>
+                    </article>
+                    <article class="panel">
+                        <h2>02 · Ask, don't assume</h2>
+                        <p class="muted">Ask the student to explain their argument, how they used sources, and why they
+                            chose a particular approach.</p>
+                    </article>
+                    <article class="panel">
+                        <h2>03 · Apply policy consistently</h2>
+                        <p class="muted">Check your institution's rules on permitted AI assistance, disclosure,
+                            collaboration, and assessment.</p>
+                    </article>
+                    <article class="panel">
+                        <h2>04 · Give a fair opportunity</h2>
+                        <p class="muted">Writing style and access to editing tools vary. Do not treat one indicator as
+                            proof of misconduct.</p>
+                    </article>
+                </div><button class="btn primary" data-go="review">Review an assignment</button>
+            </section>
+
+            <footer class="footer">ProofLearn lecturer prototype · Responsible academic review<br>Developed by
+                <b>Mugarra Trevor (MT)</b> · AI-use indicators are not proof of misconduct</footer>
+        </main>
+    </div>
+    <div id="toast" class="hidden"
+        style="position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#102746;color:white;padding:12px 16px;border-radius:10px;z-index:99;font-size:12px;max-width:90%">
+    </div>
+    <script>
+        (() => {
+            const $ = id => document.getElementById(id); let reviews = 3, qCount = 15, current = null; const names = { dashboard: 'Lecturer dashboard', review: 'Review assignment', guide: 'Responsible AI guide' }; function go(p) { Object.keys(names).forEach(k => $('page-' + k).classList.toggle('hidden', k !== p)); $('crumb').textContent = names[p]; document.querySelectorAll('[data-page]').forEach(b => b.classList.toggle('active', b.dataset.page === p)); $('sidebar').classList.remove('open'); window.scrollTo({ top: 0, behavior: 'smooth' }); } document.querySelectorAll('[data-page]').forEach(b => b.onclick = () => go(b.dataset.page)); document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go)); $('menu').onclick = () => $('sidebar').classList.toggle('open'); function toast(t) { $('toast').textContent = t; $('toast').classList.remove('hidden'); setTimeout(() => $('toast').classList.add('hidden'), 2500) }
+            $('sample').onclick = () => { $('student').value = 'DEMO-004'; $('title').value = 'Explain two learning theories'; $('instructions').value = 'Explain two psychological theories of learning, compare their strengths, and support your discussion with reliable academic sources.'; $('text').value = 'Learning is an important process in psychology. Behaviorism explains learning through observable behavior and reinforcement. For example, a student may repeat a behavior when it is rewarded. Social learning theory explains that people can learn by observing other people and the consequences of their actions. Both theories help explain learning, but they focus on different processes. According to Smith (2021), all students learn in exactly the same way. Research clearly proves that social learning is always better than behaviorism. In conclusion, lecturers should use both theories to support students.'; toast('Sample assignment loaded.'); };
+            function analyze(t) { let a = []; const pats = [/\([A-Z][A-Za-z-]+,\s*\d{4}\)/, /\b[A-Z][A-Za-z-]+\s*\(\d{4}\)/, /\[[0-9]{1,3}\]/, /https?:\/\/\S+/i, /\bdoi:|\bdoi\.org\//i]; let cite = pats.some(p => p.test(t)), refs = /\b(references|bibliography|works cited|sources)\b/i.test(t); if (/\b(according to|research (shows|proves|suggests)|studies (show|prove|suggest)|evidence (shows|proves))\b/i.test(t)) a.push(['Claims referring to research or evidence', 'Ask the student to identify the specific source and explain how it supports each claim.']); a.push([cite ? 'Possible citation pattern found' : 'No common in-text citation pattern found', cite ? 'This resembles a citation or link, but does not verify the source.' : 'Manually check the original submission and reference list. Citation formats vary.']); a.push([refs ? 'Reference-list heading found' : 'Reference list not obvious in pasted text', refs ? 'A likely heading appears; verify entries and relevance manually.' : 'The list may be in another file or use another format; check the original.']); let abs = (t.match(/\b(always|never|everyone|no one|all students|clearly proves|undoubtedly|obviously)\b/gi) || []).length; if (abs) a.push(['Broad or absolute wording', `Found ${abs} broad expression(s). Ask whether there are exceptions and what evidence supports the claim.`]); let words = t.trim().split(/\s+/).filter(Boolean).length; a.push([words < 80 ? 'Short submission' : 'Submission text received', words < 80 ? `About ${words} words were entered. If the task requires more, ask the student to expand their reasoning.` : `Approximately ${words} words were reviewed using local rules only.`]); a.push(['AI authorship cannot be determined', 'This prototype does not estimate whether text was written by AI. These observations are not proof of misconduct.']); return a; }
+            function makeQs(title, t, ins) { let first = (t.match(/[^.!?]+[.!?]?/) || ['the main idea'])[0].trim().slice(0, 125); return [`What is the main argument of “${title}”, and how would you explain it without reading your submission?`, `You wrote “${first}”. What evidence or example supports this point?`, 'Which source was most useful to you, and how did you verify that it supports your claim?', 'Can you explain one important concept from your submission and give a new example of it?', ins ? 'How did your response address the instructions, and what would you improve?' : 'What part of your work was most difficult, and how did you work through it?']; }
+            $('form').onsubmit = e => { e.preventDefault(); let title = $('title').value.trim(), t = $('text').value.trim(), ins = $('instructions').value.trim(); if (!title || !t) return; let fs = analyze(t), qs = makeQs(title, t, ins); current = { title, text: t, student: $('student').value.trim() || 'Not provided', instructions: ins, date: new Date().toLocaleString(), findings: fs, questions: qs, notes: '' }; $('reportTitle').textContent = title; $('meta').textContent = `Student: ${current.student} · Generated ${current.date}`; $('findings').replaceChildren(); fs.forEach((f, i) => { let d = document.createElement('div'); d.className = 'finding ' + (f[0].includes('Possible') || f[0].includes('heading found') || f[0].includes('received') ? 'good' : ''); let b = document.createElement('b'); let dot = document.createElement('span'); dot.className = 'dot'; b.textContent = f[0]; let p = document.createElement('p'); p.textContent = f[1]; d.append(dot, b, p); $('findings').append(d) }); $('questions').replaceChildren(); qs.forEach(q => { let li = document.createElement('li'); li.textContent = q; $('questions').append(li) }); $('notes').value = ''; $('report').classList.remove('hidden'); reviews++; qCount += 5; $('reviewCount').textContent = String(reviews).padStart(2, '0'); $('questionCount').textContent = String(qCount).padStart(2, '0'); let row = document.createElement('div'); row.className = 'review-row'; row.innerHTML = '<div class="doc">DOC</div><div class="review-info"><b></b><small></small></div><span class="status">Review generated</span>'; row.querySelector('b').textContent = title; row.querySelector('small').textContent = 'Student: ' + current.student + ' · Just now'; $('recent').prepend(row); go('review'); $('report').scrollIntoView({ behavior: 'smooth', block: 'start' }); }; $('notes').oninput = () => { if (current) current.notes = $('notes').value }; $('clear').onclick = () => setTimeout(() => $('report').classList.add('hidden'), 0); $('print').onclick = () => window.print(); $('copy').onclick = async () => { if (!current) return; let s = current.questions.map((q, i) => `${i + 1}. ${q}`).join('\n'); try { await navigator.clipboard.writeText(s); toast('Questions copied.') } catch (e) { prompt('Copy questions:', s) } }; $('download').onclick = () => { if (!current) return; let r = current, s = ['PROOFLEARN REVIEW REPORT', `Title: ${r.title}`, `Student: ${r.student}`, `Generated: ${r.date}`, '', 'These observations are not proof of AI use or misconduct.', '', 'REVIEW INDICATORS', ...r.findings.map(f => '- ' + f[0] + '\n  ' + f[1]), '', 'QUESTIONS', ...r.questions.map((q, i) => `${i + 1}. ${q}`), '', 'LECTURER NOTES', r.notes || '(No notes)', '', 'SUBMITTED TEXT', r.text, '', 'Developed by Mugarra Trevor'].join('\n'); let u = URL.createObjectURL(new Blob([s], { type: 'text/plain;charset=utf-8' })), a = document.createElement('a'); a.href = u; a.download = 'ProofLearn-report.txt'; a.click(); URL.revokeObjectURL(u) };
+        })();
+    </script>
+</body>
+
+</html>
