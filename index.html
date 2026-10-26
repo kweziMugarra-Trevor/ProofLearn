@@ -776,6 +776,7 @@
 
         @media (max-width: 600px) {
             .main-heading {
+                font-family: Arial, Helvetica, sans-serif;
                 font-size: clamp(20px, 5vw, 28px);
                 line-height: 1.2;
                 overflow-wrap: anywhere;
@@ -821,19 +822,19 @@
                 <div class="head">
                     <div>
                         <p class="eyebrow">LECTURER OVERVIEW</p>
-                        <h3>Lecturer dashboard</h3>
+                        <h3>Lecturer Dashboard</h3>
                         <p class="muted">Review student work fairly and support responsible AI use.</p>
                     </div>
                     <button class="btn primary" data-go="review">＋ New assignment review</button>
                 </div>
                 <div class="stats">
-                    <article class="stat"><span>Reviews started</span><strong id="reviewCount">03</strong><small>In this
+                    <article class="stat"><span>Reviews started</span><strong id="reviewCount">00</strong><small>In this
                             demo session</small>
                     </article>
-                    <article class="stat"><span>Follow-ups suggested</span><strong>01</strong><small>Lecturer check-in
+                    <article class="stat"><span>Follow-ups suggested</span><strong>00</strong><small>Lecturer check-in
                             recommended</small></article>
                     <article class="stat"><span>Understanding questions</span><strong
-                            id="questionCount">15</strong><small>Across sample reviews</small></article>
+                            id="questionCount">00</strong><small>Across sample reviews</small></article>
                 </div>
                 <div class="layout">
                     <article class="panel">
@@ -883,16 +884,41 @@
                         information.</p>
                 </div>
                 <form class="panel form" id="form">
-                    <div class="formgrid"><label>Student identifier (optional)<input id="student" maxlength="40"
-                                placeholder="e.g. DEMO-004"></label><label>Assignment title *<input id="title" required
-                                maxlength="120" placeholder="e.g. Explain two learning theories"></label></div>
+                    <div class="formgrid">
+                        <label>Student identifier (optional)<input id="student" maxlength="40"
+                                placeholder="e.g. DEMO-004">
+                        </label>
+                        
+                        <label>Assignment title *<input id="title" required
+                                maxlength="120" placeholder="e.g. Explain two learning theories">
+                        </label>
+                    </div>
+
                     <label>Assignment instructions (optional)<textarea id="instructions" rows="3"
-                            placeholder="What did the assignment ask the student to do?"></textarea></label><label>Student's
-                        submitted text *<textarea id="text" required
-                            placeholder="Paste fictional/sample assignment text here..."></textarea></label>
+                            placeholder="What did the assignment ask the student to do?"></textarea></label>
+                        
+
+                            <label>
+                                Student's submitted work *
+                                <div id="fileDropZone" style="border: 2px dashed #9aacc2; padding: 12px; border-radius: 10px;">
+                                    <textarea id="text" required
+                                        placeholder="Paste the student's work here, or drop a .docx or PDF into this area..."></textarea>
+                            
+                                    <div style="margin-top: 10px;">
+                                        <span>Or choose a .docx or PDF file:</span>
+                                        <input id="documentFile" type="file"
+                                            accept=".docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                                    </div>
+                            
+                                    <p id="fileStatus" class="small" aria-live="polite">
+                                        You can paste text above or drop a document into this section.
+                                    </p>
+                                </div>
+                            </label>
                     <div class="actions"><button type="button" class="btn secondary" id="sample">Load sample
                             assignment</button><button type="reset" class="btn quiet" id="clear">Clear</button><button
-                            type="submit" class="btn primary push">Generate review report →</button></div>
+                            type="submit" class="btn primary push">Generate review report →</button>
+                    </div>
                 </form>
                 <div class="report hidden" id="report">
                     <div class="reporthead">
@@ -970,12 +996,99 @@
     <div id="toast" class="hidden"
         style="position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#102746;color:white;padding:12px 16px;border-radius:10px;z-index:99;font-size:12px;max-width:90%">
     </div>
+
+    <script src="https://unpkg.com/mammoth@1.11.0/mammoth.browser.js"></script>
+    
+    <script type="module">
+        import * as pdfjsLib from
+            'https://unpkg.com/pdfjs-dist@6.4.299/build/pdf.mjs';
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://unpkg.com/pdfjs-dist@6.4.299/build/pdf.worker.mjs';
+
+        window.extractPdfText = async file => {
+            const data = new Uint8Array(await file.arrayBuffer());
+            const pdf = await pdfjsLib.getDocument({ data }).promise;
+            const pages = [];
+
+            for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+                const page = await pdf.getPage(pageNumber);
+                const content = await page.getTextContent();
+
+                pages.push(
+                    content.items.map(item => item.str).join(' ')
+                );
+            }
+
+            return pages.join('\n\n');
+        };
+    </script>
     <script>
        (() => {
             const $ = id => document.getElementById(id);
 
-            let reviews = 3;
-            let qCount = 15;
+                const fileInput = $('documentFile');
+           const dropZone = $('fileDropZone');
+           const fileStatus = $('fileStatus');
+
+           async function loadDocument(file) {
+               if (!file) return;
+
+               if (file.size > 10 * 1024 * 1024) {
+                   fileStatus.textContent = 'Please choose a file smaller than 10 MB.';
+                   return;
+               }
+
+               const extension = file.name.split('.').pop().toLowerCase();
+
+               try {
+                   let extractedText = '';
+
+                   if (extension === 'docx') {
+                       const result = await window.mammoth.extractRawText({
+                           arrayBuffer: await file.arrayBuffer()
+                       });
+
+                       extractedText = result.value;
+                   } else if (extension === 'pdf') {
+                       if (!window.extractPdfText) {
+                           throw new Error('The PDF reader has not finished loading.');
+                       }
+
+                       extractedText = await window.extractPdfText(file);
+                   } else {
+                       throw new Error('Choose a .docx or .pdf file.');
+                   }
+
+                   if (!extractedText.trim()) {
+                       throw new Error(
+                           'No readable text was found. The PDF may be scanned or image-only.'
+                       );
+                   }
+
+                   $('text').value = extractedText;
+                   fileStatus.textContent =
+                       `${file.name} loaded. Check the text, then generate the report.`;
+               } catch (error) {
+                   fileStatus.textContent = error.message;
+               }
+           }
+
+           fileInput.addEventListener('change', event => {
+               loadDocument(event.target.files[0]);
+           });
+
+           dropZone.addEventListener('dragover', event => {
+               event.preventDefault();
+           });
+
+           dropZone.addEventListener('drop', event => {
+               event.preventDefault();
+               loadDocument(event.dataTransfer.files[0]);
+           });
+
+            let reviews = 0;
+            let qCount = 0;
             let current = null;
 
             const names = {
