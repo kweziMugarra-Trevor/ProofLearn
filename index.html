@@ -6,783 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="theme-color" content="#102746">
     <title>ProofLearn | Lecturer Workspace</title>
-    <style>
-        :root {
-            --n: #102746;
-            --b: #2f6fed;
-            --ink: #1b293b;
-            --muted: #68788d;
-            --line: #e1e8f1;
-            --bg: #f4f7fb
-        }
-
-        * {
-            box-sizing: border-box
-        }
-
-        body {
-            margin: 0;
-            background: var(--bg);
-            color: var(--ink);
-            font: 14px system-ui, -apple-system, "Segoe UI", sans-serif
-        }
-
-        .app {
-            min-height: 100vh;
-            display: flex
-        }
-
-        .side {
-            width: 235px;
-            background: var(--n);
-            color: white;
-            padding: 22px 15px;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0 8px 25px
-        }
-
-        .logo {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            background: white;
-            color: var(--n);
-            display: grid;
-            place-items: center;
-            font-weight: 900;
-            font-size: 23px
-        }
-
-        .brand b {
-            font-size: 17px
-        }
-
-        .brand small {
-            display: block;
-            color: #b9c9dc;
-            font-size: 11px;
-            margin-top: 3px
-        }
-
-        .nav {
-            display: grid;
-            gap: 6px
-        }
-
-        .nav button {
-            border: 0;
-            border-radius: 9px;
-            background: transparent;
-            color: #cbd7e5;
-            text-align: left;
-            padding: 12px;
-            font-weight: 650
-        }
-
-        .nav button.active,
-        .nav button:hover {
-            background: #244366;
-            color: white
-        }
-
-        .nav span {
-            display: inline-block;
-            width: 24px
-        }
-
-        .side-note {
-            margin-top: auto;
-            background: #1b395c;
-            border: 1px solid #315071;
-            border-radius: 11px;
-            padding: 14px;
-            font-size: 11px;
-            line-height: 1.6;
-            color: #c7d4e3
-        }
-
-        .side-note b {
-            color: white
-        }
-
-        .side small.foot {
-            color: #a9bad0
-        }
-
-        .main {
-            flex: 1;
-            min-width: 0;
-            padding: 0 28px 22px
-        }
-
-        .top {
-            height: 68px;
-            border-bottom: 1px solid var(--line);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 26px
-        }
-
-        .crumb {
-            font-size: 12px;
-            color: var(--muted)
-        }
-
-        .user {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .avatar {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: #dce9ff;
-            color: var(--n);
-            display: grid;
-            place-items: center
-        }
-
-        .menu {
-            display: none;
-            border: 0;
-            background: none;
-            font-size: 22px;
-            color: var(--n)
-        }
-
-        .page {
-            max-width: 1200px;
-            margin: 0 auto 28px
-        }
-
-        .hidden {
-            display: none !important
-        }
-
-        .head {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 16px;
-            margin-bottom: 22px
-        }
-
-        .eyebrow {
-            color: var(--b);
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 1.4px;
-            margin: 0 0 7px
-        }
-
-        .head h1 {
-            color: var(--n);
-            font-size: clamp(25px, 3vw, 33px);
-            letter-spacing: -.7px;
-            margin: 0 0 8px
-        }
-
-        .muted {
-            color: var(--muted);
-            line-height: 1.65;
-            margin: 0
-        }
-
-        .small {
-            font-size: 11px
-        }
-
-        .btn {
-            border: 0;
-            border-radius: 9px;
-            padding: 11px 14px;
-            font-size: 12px;
-            font-weight: 750;
-            cursor: pointer
-        }
-
-        .primary {
-            background: var(--b);
-            color: white
-        }
-
-        .secondary {
-            background: #edf3fc;
-            color: var(--n);
-            border: 1px solid #d9e4f5
-        }
-
-        .quiet {
-            background: transparent;
-            color: var(--muted)
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 14px;
-            margin-bottom: 18px
-        }
-
-        .stat,
-        .panel {
-            background: white;
-            border: 1px solid var(--line);
-            border-radius: 13px;
-            box-shadow: 0 8px 25px #1027460a
-        }
-
-        .stat {
-            padding: 18px
-        }
-
-        .stat span {
-            font-size: 12px;
-            color: var(--muted);
-            font-weight: 650
-        }
-
-        .stat strong {
-            display: block;
-            color: var(--n);
-            font-size: 29px;
-            margin: 9px 0 3px
-        }
-
-        .stat small {
-            color: #8491a2;
-            font-size: 11px
-        }
-
-        .layout {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 17px
-        }
-
-        .panel {
-            padding: 20px
-        }
-
-        .panel h2,
-        .panel h3 {
-            color: var(--n);
-            margin: 0 0 8px
-        }
-
-        .panel h2 {
-            font-size: 18px;
-        }
-
-        .panel h3 {
-            font-size: 15px
-        }
-
-        .panel-head {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            align-items: flex-start;
-            margin-bottom: 14px;
-        }
-
-        .pill {
-            font-size: 10px;
-            font-weight: 750;
-            padding: 6px 9px;
-            border-radius: 20px;
-            background: #eef3fa;
-            color: #52647c;
-        }
-
-        .review-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 13px 0;
-            border-bottom: 1px solid #edf0f5
-        }
-
-        .review-row:last-child {
-            border: 0;
-        }
-
-        .doc {
-            width: 36px;
-            height: 36px;
-            border-radius: 9px;
-            background: #edf4ff;
-            color: #426bb2;
-            display: grid;
-            place-items: center;
-            font-size: 9px;
-            font-weight: 900;
-            flex-shrink: 0
-        }
-
-        .review-info {
-            min-width: 0;
-            flex: 1
-        }
-
-        .review-info b {
-            display: block;
-            font-size: 12px;
-            overflow-wrap: anywhere
-        }
-
-        .review-info small {
-            display: block;
-            font-size: 10px;
-            color: var(--muted);
-            margin-top: 4px
-        }
-
-        .status {
-            font-size: 9px;
-            font-weight: 800;
-            padding: 6px 8px;
-            border-radius: 20px;
-            background: #fff2dc;
-            color: #93600e;
-            white-space: nowrap
-        }
-
-        .done {
-            background: #e3f6ec;
-            color: #177451;
-        }
-
-        .guidance {
-            background: linear-gradient(145deg, #fff, #f5f8ff)
-        }
-
-        .guidance p {
-            font-size: 12px;
-            line-height: 1.7;
-            color: var(--muted)
-        }
-
-        .guidance ul {
-            padding-left: 18px;
-            font-size: 11px;
-            line-height: 2;
-            color: #425269
-        }
-
-        .notice,
-        .warning,
-        .demo-warning {
-            border-radius: 10px;
-            padding: 13px 15px;
-            margin-bottom: 16px;
-            font-size: 11px;
-            line-height: 1.65
-        }
-
-        .notice {
-            background: #eff5ff;
-            border: 1px solid #d9e7ff;
-            color: #355276;
-            display: flex;
-            gap: 10px
-        }
-
-        .notice p {
-            margin: 0
-        }
-
-        .demo-warning {
-            background: #fff5e6;
-            border: 1px solid #f1d8b2;
-            color: #76531d;
-        }
-
-        .warning {
-            background: #fff8e9;
-            border: 1px solid #f3e2bd;
-            color: #735016;
-        }
-
-        .form {
-            display: grid;
-            gap: 16px;
-        }
-
-        .formgrid {
-            display: grid;
-            grid-template-columns: 1fr 1.5fr;
-            gap: 14px
-        }
-
-        label {
-            display: grid;
-            gap: 8px;
-            color: #35445a;
-            font-size: 12px;
-            font-weight: 750;
-        }
-
-        input,
-        textarea {
-            width: 100%;
-            border: 1px solid #dbe2ec;
-            border-radius: 9px;
-            padding: 12px;
-            background: white;
-            color: var(--ink);
-            font: inherit;
-            font-size: 12px;
-            outline: none;
-        }
-
-        input:focus,
-        textarea:focus {
-            border-color: #6a9aff;
-            box-shadow: 0 0 0 3px #2f6fed16
-        }
-
-        textarea {
-            resize: vertical;
-            line-height: 1.6;
-            min-height: 80px;
-        }
-
-        #assignmentText {
-            min-height: 170px
-        }
-
-        .actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .actions .push {
-            margin-left: auto
-        }
-
-        .report {
-            margin-top: 25px;
-        }
-
-        .reporthead {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            align-items: flex-start;
-            margin-bottom: 15px;
-        }
-
-        .reporthead h2 {
-            margin: 0 0 6px;
-            color: var(--n);
-            font-size: 22px;
-        }
-
-        .reportgrid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .finding {
-            padding: 12px 0;
-            border-bottom: 1px solid #edf0f5
-        }
-
-        .finding:last-child {
-            border: 0;
-        }
-
-        .finding b {
-            font-size: 12px;
-        }
-
-        .finding p {
-            font-size: 11px;
-            color: var(--muted);
-            line-height: 1.6;
-            margin: 6px 0 0 15px;
-        }
-
-        .dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #dca33b;
-            margin-right: 8px;
-        }
-
-        .good .dot {
-            background: #29966e;
-        }
-
-        .questions {
-            padding-left: 20px;
-        }
-
-        .questions li {
-            font-size: 12px;
-            line-height: 1.6;
-            padding-bottom: 11px;
-        }
-
-        .full {
-            width: 100%;
-        }
-
-        .notes {
-            display: grid;
-            gap: 12px;
-            margin-top: 14px;
-        }
-
-        .between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .plan-grid,
-        .guide-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 15px;
-        }
-
-        .price {
-            font-size: 27px;
-            font-weight: 850;
-            color: var(--n);
-            margin: 14px 0 4px;
-        }
-
-        .plan ul {
-            font-size: 12px;
-            line-height: 2.1;
-            color: #425269;
-            padding-left: 18px;
-        }
-
-        .pay-number {
-            font-size: 23px;
-            font-weight: 850;
-            color: var(--n);
-            margin: 12px 0;
-        }
-
-        .admin-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 12px;
-        }
-
-        .admin-stat {
-            padding: 15px;
-            background: #f5f8fc;
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            font-size: 11px;
-            color: var(--muted);
-        }
-
-        .admin-stat strong {
-            display: block;
-            font-size: 21px;
-            color: var(--n);
-            margin-top: 8px;
-        }
-
-        .footer {
-            text-align: center;
-            border-top: 1px solid var(--line);
-            padding: 18px 4px 5px;
-            color: #8390a1;
-            font-size: 10px;
-            line-height: 1.8;
-            margin-top: 28px;
-        }
-
-        .footer b {
-            color: var(--n);
-        }
-
-        @media(max-width:850px) {
-            .side {
-                width: 210px
-            }
-
-            .main {
-                padding: 0 18px 20px
-            }
-
-            .layout {
-                grid-template-columns: 1fr
-            }
-        }
-
-        @media(max-width:640px) {
-            .app {
-                display: block
-            }
-
-            .side {
-                position: fixed;
-                z-index: 10;
-                top: 0;
-                bottom: 0;
-                left: -250px;
-                width: 235px;
-                transition: left .2s;
-                box-shadow: 12px 0 30px #0002
-            }
-
-            .side.open {
-                left: 0
-            }
-
-            .main {
-                padding: 0 12px 18px;
-            }
-
-            .top {
-                height: 60px;
-                margin-bottom: 22px;
-            }
-
-            .menu {
-                display: block;
-            }
-
-            .crumb {
-                font-size: 10px;
-            }
-
-            .user span {
-                display: none;
-            }
-
-            .head {
-                flex-direction: column;
-            }
-
-            .head>.btn {
-                width: 100%;
-            }
-
-            .stats {
-                grid-template-columns: 1fr;
-                gap: 9px;
-            }
-
-            .stat {
-                padding: 14px;
-            }
-
-            .stat strong {
-                font-size: 25px;
-                margin: 5px 0 1px;
-            }
-
-            .layout,
-            .formgrid,
-            .reportgrid,
-            .plan-grid,
-            .guide-grid,
-            .admin-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .panel {
-                padding: 16px;
-            }
-
-            .review-row {
-                flex-wrap: wrap;
-            }
-
-            .status {
-                margin-left: 46px;
-            }
-
-            .actions .push {
-                margin-left: 0;
-                flex-basis: 100%;
-            }
-
-            .actions .btn {
-                flex: 1;
-            }
-
-            .reporthead {
-                flex-direction: column
-            }
-
-            .reporthead .btn {
-                width: 100%
-            }
-        }
-
-        @media print {
-
-            .side,
-            .top,
-            .head,
-            .notice,
-            .form,
-            .footer,
-            .reporthead .btn {
-                display: none !important
-            }
-
-            .main {
-                padding: 0
-            }
-
-            .page.hidden {
-                display: none !important
-            }
-
-            .report {
-                display: block !important
-            }
-
-            .panel {
-                box-shadow: none;
-                break-inside: avoid;
-            }
-        }
-
-        .smooth-image {
-            border-radius: 18px;
-        }
-
-        @media (max-width: 600px) {
-            .main-heading {
-                font-family: Arial, Helvetica, sans-serif;
-                font-size: clamp(20px, 5vw, 28px);
-                line-height: 1.2;
-                overflow-wrap: anywhere;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -790,8 +14,8 @@
     <div class="app">
         <aside class="side" id="sidebar">
             <div class="brand">
-                <div class="logo"><img src="image.png" alt="ProofLearn Logo"
-                        width="190" height="63" class="smooth-image">
+                <div class="logo"><img src="image.png" alt="ProofLearn Logo" width="190" height="63"
+                        class="smooth-image">
 
                 </div>
             </div>
@@ -888,33 +112,33 @@
                         <label>Student identifier (optional)<input id="student" maxlength="40"
                                 placeholder="e.g. DEMO-004">
                         </label>
-                        
-                        <label>Assignment title *<input id="title" required
-                                maxlength="120" placeholder="e.g. Explain two learning theories">
+
+                        <label>Assignment title *<input id="title" required maxlength="120"
+                                placeholder="e.g. Explain two learning theories">
                         </label>
                     </div>
 
                     <label>Assignment instructions (optional)<textarea id="instructions" rows="3"
                             placeholder="What did the assignment ask the student to do?"></textarea></label>
-                        
 
-                            <label>
-                                Student's submitted work *
-                                <div id="fileDropZone" style="border: 2px dashed #9aacc2; padding: 12px; border-radius: 10px;">
-                                    <textarea id="text" required
-                                        placeholder="Paste the student's work here, or drop a .docx or PDF into this area..."></textarea>
-                            
-                                    <div style="margin-top: 10px;">
-                                        <span>Or choose a .docx or PDF file:</span>
-                                        <input id="documentFile" type="file"
-                                            accept=".docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
-                                    </div>
-                            
-                                    <p id="fileStatus" class="small" aria-live="polite">
-                                        You can paste text above or drop a document into this section.
-                                    </p>
-                                </div>
-                            </label>
+
+                    <label>
+                        Student's submitted work *
+                        <div id="fileDropZone" style="border: 2px dashed #9aacc2; padding: 12px; border-radius: 10px;">
+                            <textarea id="text" required
+                                placeholder="Paste the student's work here, or drop a .docx or PDF into this area..."></textarea>
+
+                            <div style="margin-top: 10px;">
+                                <span>Or choose a .docx or PDF file:</span>
+                                <input id="documentFile" type="file"
+                                    accept=".docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                            </div>
+
+                            <p id="fileStatus" class="small" aria-live="polite">
+                                You can paste text above or drop a document into this section.
+                            </p>
+                        </div>
+                    </label>
                     <div class="actions"><button type="button" class="btn secondary" id="sample">Load sample
                             assignment</button><button type="reset" class="btn quiet" id="clear">Clear</button><button
                             type="submit" class="btn primary push">Generate review report →</button>
@@ -998,7 +222,7 @@
     </div>
 
     <script src="https://unpkg.com/mammoth@1.11.0/mammoth.browser.js"></script>
-    
+
     <script type="module">
         import * as pdfjsLib from
             'https://unpkg.com/pdfjs-dist@6.4.299/build/pdf.mjs';
@@ -1024,68 +248,68 @@
         };
     </script>
     <script>
-       (() => {
+        (() => {
             const $ = id => document.getElementById(id);
 
-                const fileInput = $('documentFile');
-           const dropZone = $('fileDropZone');
-           const fileStatus = $('fileStatus');
+            const fileInput = $('documentFile');
+            const dropZone = $('fileDropZone');
+            const fileStatus = $('fileStatus');
 
-           async function loadDocument(file) {
-               if (!file) return;
+            async function loadDocument(file) {
+                if (!file) return;
 
-               if (file.size > 10 * 1024 * 1024) {
-                   fileStatus.textContent = 'Please choose a file smaller than 10 MB.';
-                   return;
-               }
+                if (file.size > 10 * 1024 * 1024) {
+                    fileStatus.textContent = 'Please choose a file smaller than 10 MB.';
+                    return;
+                }
 
-               const extension = file.name.split('.').pop().toLowerCase();
+                const extension = file.name.split('.').pop().toLowerCase();
 
-               try {
-                   let extractedText = '';
+                try {
+                    let extractedText = '';
 
-                   if (extension === 'docx') {
-                       const result = await window.mammoth.extractRawText({
-                           arrayBuffer: await file.arrayBuffer()
-                       });
+                    if (extension === 'docx') {
+                        const result = await window.mammoth.extractRawText({
+                            arrayBuffer: await file.arrayBuffer()
+                        });
 
-                       extractedText = result.value;
-                   } else if (extension === 'pdf') {
-                       if (!window.extractPdfText) {
-                           throw new Error('The PDF reader has not finished loading.');
-                       }
+                        extractedText = result.value;
+                    } else if (extension === 'pdf') {
+                        if (!window.extractPdfText) {
+                            throw new Error('The PDF reader has not finished loading.');
+                        }
 
-                       extractedText = await window.extractPdfText(file);
-                   } else {
-                       throw new Error('Choose a .docx or .pdf file.');
-                   }
+                        extractedText = await window.extractPdfText(file);
+                    } else {
+                        throw new Error('Choose a .docx or .pdf file.');
+                    }
 
-                   if (!extractedText.trim()) {
-                       throw new Error(
-                           'No readable text was found. The PDF may be scanned or image-only.'
-                       );
-                   }
+                    if (!extractedText.trim()) {
+                        throw new Error(
+                            'No readable text was found. The PDF may be scanned or image-only.'
+                        );
+                    }
 
-                   $('text').value = extractedText;
-                   fileStatus.textContent =
-                       `${file.name} loaded. Check the text, then generate the report.`;
-               } catch (error) {
-                   fileStatus.textContent = error.message;
-               }
-           }
+                    $('text').value = extractedText;
+                    fileStatus.textContent =
+                        `${file.name} loaded. Check the text, then generate the report.`;
+                } catch (error) {
+                    fileStatus.textContent = error.message;
+                }
+            }
 
-           fileInput.addEventListener('change', event => {
-               loadDocument(event.target.files[0]);
-           });
+            fileInput.addEventListener('change', event => {
+                loadDocument(event.target.files[0]);
+            });
 
-           dropZone.addEventListener('dragover', event => {
-               event.preventDefault();
-           });
+            dropZone.addEventListener('dragover', event => {
+                event.preventDefault();
+            });
 
-           dropZone.addEventListener('drop', event => {
-               event.preventDefault();
-               loadDocument(event.dataTransfer.files[0]);
-           });
+            dropZone.addEventListener('drop', event => {
+                event.preventDefault();
+                loadDocument(event.dataTransfer.files[0]);
+            });
 
             let reviews = 0;
             let qCount = 0;

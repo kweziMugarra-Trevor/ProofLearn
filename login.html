@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ProofLearn | Lecturer Access</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 420px;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo {
+            text-align: center;
+            color: #102b50;
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .logo span {
+            color: #159b88;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #68758a;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #102b50;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            color: #34445b;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d5dce7;
+            border-radius: 7px;
+            margin-bottom: 18px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #159b88;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 7px;
+            background: #102b50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #159b88;
+        }
+
+        .switch {
+            text-align: center;
+            margin-top: 20px;
+            color: #68758a;
+            font-size: 14px;
+        }
+
+        .switch a {
+            color: #159b88;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .message {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #b04444;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="logo">
+            Proof<span>Learn</span>
+        </div>
+
+        <p class="subtitle">
+            Responsible AI-use and academic review
+        </p>
+
+        <!-- LOGIN FORM -->
+
+        <div id="loginSection">
+
+            <h2>Lecturer Login</h2>
+
+            <form id="loginForm">
+
+                <label>Email Address</label>
+                <input type="email" id="loginEmail" placeholder="Enter your university email" required>
+
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password" required>
+
+                <button type="submit">
+                    Login to Dashboard
+                </button>
+
+            </form>
+
+            <p class="switch">
+                Don't have an account?
+                <a id="showSignup">Create Account</a>
+            </p>
+
+        </div>
+
+        <!-- SIGN UP FORM -->
+
+        <div id="signupSection" class="hidden">
+
+            <h2>Create Lecturer Account</h2>
+
+            <form id="signupForm">
+
+                <label>Full Name</label>
+                <input type="text" id="fullName" placeholder="Enter your full name" required>
+
+                <label>University Email</label>
+                <input type="email" id="signupEmail" placeholder="Enter your email" required>
+
+                <label>Password</label>
+                <input type="password" id="signupPassword" placeholder="Create a password" minlength="8" required>
+
+                <label>Confirm Password</label>
+                <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+
+                <button type="submit">
+                    Create Account
+                </button>
+
+            </form>
+
+            <p class="switch">
+                Already registered?
+                <a id="showLogin">Login</a>
+            </p>
+
+        </div>
+
+        <p id="message" class="message"></p>
+
+    </div>
+
+    <script>
+
+        // Get the login and signup sections
+
+        const loginSection =
+            document.getElementById("loginSection");
+
+        const signupSection =
+            document.getElementById("signupSection");
+
+        const message =
+            document.getElementById("message");
+
+
+        // Switch to signup
+
+        document.getElementById("showSignup")
+            .addEventListener("click", function () {
+
+                loginSection.classList.add("hidden");
+
+                signupSection.classList.remove("hidden");
+
+                message.textContent = "";
+            });
+
+
+        // Switch back to login
+
+        document.getElementById("showLogin")
+            .addEventListener("click", function () {
+
+                signupSection.classList.add("hidden");
+
+                loginSection.classList.remove("hidden");
+
+                message.textContent = "";
+            });
+
+
+        // Handle signup form
+
+        document.getElementById("signupForm")
+            .addEventListener("submit", function (event) {
+
+                event.preventDefault();
+
+                const password =
+                    document.getElementById("signupPassword").value;
+
+                const confirmPassword =
+                    document.getElementById("confirmPassword").value;
+
+                if (password !== confirmPassword) {
+
+                    message.textContent =
+                        "Passwords do not match.";
+
+                    return;
+                }
+
+                message.textContent =
+                    "Registration interface is working. Authentication still needs to be connected.";
+
+            });
+
+
+        // Handle login form
+
+        document.getElementById("loginForm")
+            .addEventListener("submit", function (event) {
+
+                event.preventDefault();
+
+                message.textContent =
+                    "Login interface is working. Connect secure authentication to access the dashboard.";
+
+            });
+
+    </script>
+
+</body>
+
+</html>
