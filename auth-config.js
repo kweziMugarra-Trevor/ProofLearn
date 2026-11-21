@@ -8,10 +8,10 @@
       emailRedirectTo: 'https://lighthearted-zabaione-231c73.netlify.app/login.html',
       environment: 'production'
     }),
-    'https://deploy-preview-1--prooflearn-muni.netlify.app': Object.freeze({
+    'https://deploy-preview-2--prooflearn-muni.netlify.app': Object.freeze({
       url: 'https://nrybmqkcdfykywyyrvhm.supabase.co',
       publishableKey: 'sb_publishable_ktTum9aYssBIxfVKPD6hzA_bnlH5mCY',
-      emailRedirectTo: 'https://deploy-preview-1--prooflearn-muni.netlify.app/login.html',
+      emailRedirectTo: 'https://deploy-preview-2--prooflearn-muni.netlify.app/login.html',
       environment: 'staging'
     })
   });
