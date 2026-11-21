@@ -1,28 +1,29 @@
+/* This is a browser UI gate, not server-side access control. Static files remain public. */
 (() => {
   const label = document.getElementById('authStatus');
-  const link = document.getElementById('authLink');
   const logout = document.getElementById('dashboardLogout');
+  const login = () => window.location.replace('login.html');
   let client;
-  function guest(text) { label.textContent = text; link.hidden = false; logout.hidden = true; }
   try { client = ProofAuth.client(); }
-  catch (e) { guest(ProofAuth.message(e)); return; }
+  catch (e) { login(); return; }
   async function refresh() {
     try {
       const { data, error } = await client.auth.getSession();
-      if (error) throw error;
-      if (!data || !data.session) { guest('Public prototype'); return; }
+      if (error || !data || !data.session) { login(); return; }
       const user = await ProofAuth.confirmedUser(client.auth);
-      if (!user) { guest('Email confirmation required'); return; }
+      if (!user) { login(); return; }
       label.textContent = 'Signed in: ' + (user.email || 'confirmed account');
-      link.hidden = true; logout.hidden = false;
-    } catch (e) { guest('Account status unavailable'); }
+      logout.hidden = false;
+      document.documentElement.classList.add('auth-ready');
+    } catch (e) { login(); }
   }
   logout.addEventListener('click', async () => {
     logout.disabled = true;
     try {
       const { error } = await client.auth.signOut();
       if (error) throw error;
-      guest('Signed out');
+      document.documentElement.classList.remove('auth-ready');
+      login();
     } catch (e) { label.textContent = 'Sign-out failed; try again'; }
     finally { logout.disabled = false; }
   });

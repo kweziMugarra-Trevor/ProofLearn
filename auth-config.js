@@ -2,10 +2,10 @@
 // Unknown origins are disabled rather than silently using a real project.
 (() => {
   const origins = Object.freeze({
-    'https://lighthearted-zabaione-231c73.netlify.app': Object.freeze({
+    'https://prooflearn-muni.netlify.app': Object.freeze({
       url: 'https://zsovgligvblsbzutyxgr.supabase.co',
       publishableKey: 'sb_publishable_RmPWAW1q9J7vhgxnEc9wAw_RXwn6hhy',
-      emailRedirectTo: 'https://lighthearted-zabaione-231c73.netlify.app/login.html',
+      emailRedirectTo: 'https://prooflearn-muni.netlify.app/login.html',
       environment: 'production'
     }),
     'https://deploy-preview-2--prooflearn-muni.netlify.app': Object.freeze({
