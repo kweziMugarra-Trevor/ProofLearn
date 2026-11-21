@@ -260,11 +260,21 @@
             const fileInput = $('documentFile');
             const dropZone = $('fileDropZone');
             const fileStatus = $('fileStatus');
+            const generateButton = $('form').querySelector('button[type="submit"]');
 
             const initialFileStatus = 'You can paste text above or drop a document into this section.';
             let importVersion = 0;
             let importPending = false;
-            function cancelImport() { const pending = importPending; importVersion++; importPending = false; return pending; }
+            function setImportPending(pending) {
+                importPending = pending;
+                generateButton.disabled = pending;
+            }
+            function cancelImport() {
+                const pending = importPending;
+                importVersion++;
+                setImportPending(false);
+                return pending;
+            }
             function clearReport() {
                 current = null;
                 $('report').classList.add('hidden');
@@ -275,18 +285,21 @@
                 $('notes').value = '';
             }
             async function loadDocument(file) {
-                const version = ++importVersion;
-                importPending = false;
                 if (!file) return;
+                if (($('text').value || $('notes').value || !$('report').classList.contains('hidden')) &&
+                    !window.confirm('Replace the current submission? This will clear the current text, report, and lecturer notes.')) return;
+                cancelImport();
+                const version = importVersion;
                 clearReport();
+                $('text').value = '';
 
                 if (file.size > 10 * 1024 * 1024) {
-                    fileStatus.textContent = 'Please choose a file smaller than 10 MB.';
+                    fileStatus.textContent = 'Please choose a file smaller than 10 MB, or paste text instead.';
                     return;
                 }
 
                 const extension = file.name.split('.').pop().toLowerCase();
-                importPending = true;
+                setImportPending(true);
                 fileStatus.textContent = 'Reading document…';
 
                 try {
@@ -320,14 +333,16 @@
                         `${file.name} loaded. Check the text, then generate the report.`;
                 } catch (error) {
                     if (version !== importVersion) return;
-                    fileStatus.textContent = error.message;
+                    fileStatus.textContent = `${error.message} No text was imported; choose another file or paste text.`;
                 } finally {
-                    if (version === importVersion) importPending = false;
+                    if (version === importVersion) setImportPending(false);
                 }
             }
 
             fileInput.addEventListener('change', event => {
-                loadDocument(event.target.files[0]);
+                const file = event.target.files[0];
+                event.target.value = '';
+                loadDocument(file);
             });
 
             dropZone.addEventListener('dragover', event => {
@@ -487,7 +502,10 @@
 
             $('form').onsubmit = e => {
                 e.preventDefault();
-                if (cancelImport()) fileStatus.textContent = 'Document import cancelled. Load the file again if needed.';
+                if (importPending) {
+                    fileStatus.textContent = 'Please wait for the document to finish reading, or type or paste text to cancel the import.';
+                    return;
+                }
 
                 let title = $('title').value.trim();
                 let t = $('text').value.trim();
