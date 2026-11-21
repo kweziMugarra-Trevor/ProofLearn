@@ -19,6 +19,7 @@ async function app(opts = {}) {
   let session = opts.session || null, user = opts.user || { email:'person@example.org', email_confirmed_at:'2026-01-01T00:00:00Z' };
   let calls = [], removedFragment = false, navigation = [];
   const auth = {
+    onAuthStateChange: () => ({data:{subscription:{unsubscribe(){}}}}),
     getSession: async () => ({data:{session}, error:opts.sessionError || null}),
     getUser: async () => ({data:{user}, error:opts.userError || null}),
     signUp: async args => { calls.push(['signUp', args]); if (opts.autoConfirm) session = {access_token:'mock'}; return {data:{session: opts.autoConfirm ? session : null},error:opts.signupError || null}; },
@@ -58,6 +59,6 @@ async function app(opts = {}) {
   a = await app({dashboard:true,session:{access_token:'mock'},logoutError:{message:'network'}}); await a.e.dashboardLogout.fire('click'); assert.match(a.e.authStatus.textContent,/sign-out failed/i); assert.deepEqual(a.navigation,[]); assert.equal(a.rootClasses.has('auth-ready'),true);
   for (const opts of [{}, {noKey:true}, {sessionError:{message:'network'}}, {session:{access_token:'mock'},user:{email:'x',email_confirmed_at:null}}, {session:{access_token:'mock'},userError:{message:'network'}}]) { a=await app({dashboard:true,...opts}); assert.deepEqual(a.navigation,['login.html']); assert.equal(a.rootClasses.has('auth-ready'),false); }
   const index=fs.readFileSync(path.join(root,'index.html'),'utf8'), loginHtml=fs.readFileSync(path.join(root,'login.html'),'utf8'), dash=fs.readFileSync(path.join(root,'dashboard.html'),'utf8');
-  assert.match(index,/location\.replace\('login\.html'\)/); assert.match(index,/url=login\.html/); assert.doesNotMatch(loginHtml,/without signing in|Open public prototype/i); assert.match(dash,/id="dashboardLogout"/); assert.match(dash,/html:not\(\.auth-ready\) \.app/); assert.match(dash,/sample data only/i); assert.match(dash,/id="sample"/); assert.match(dash,/window\.extractPdfText/);
+  assert.match(index,/location\.replace\('login\.html' \+ fragment\)/); assert.doesNotMatch(index,/http-equiv="refresh"/i); assert.doesNotMatch(loginHtml,/without signing in|Open public prototype/i); assert.match(dash,/id="dashboardLogout"/); assert.match(dash,/html:not\(\.auth-ready\) \.app/); assert.match(dash,/sample data only/i); assert.match(dash,/id="sample"/); assert.match(dash,/window\.extractPdfText/);
   console.log('PASS: mocked signup, confirmation, login, session, callback, logout, guard and static page checks.');
 })().catch(err=>{console.error(err);process.exit(1);});
