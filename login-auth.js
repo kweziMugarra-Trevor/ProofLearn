@@ -1,13 +1,14 @@
 (() => {
   const $ = id => document.getElementById(id);
-  const login = $('loginSection'), signup = $('signupSection'), signed = $('signedInSection'), msg = $('message');
-  const buttons = [document.querySelector('#loginForm button[type=submit]'), document.querySelector('#signupForm button[type=submit]'), $('logout'), $('resend')];
+  const stagingNotice = $('stagingNotice');
+  if (stagingNotice && window.PROOFLEARN_AUTH.environment === 'staging') stagingNotice.hidden = false;
+  const login = $('loginSection'), signup = $('signupSection'), msg = $('message');
+  const buttons = [document.querySelector('#loginForm button[type=submit]'), document.querySelector('#signupForm button[type=submit]'), $('resend')];
   const say = (text, ok = false) => { msg.textContent = text; msg.classList.toggle('ok', ok); };
   const busy = flag => buttons.forEach(b => { b.disabled = flag; });
   function view(which) {
     login.classList.toggle('hidden', which !== 'login');
     signup.classList.toggle('hidden', which !== 'signup');
-    signed.classList.toggle('hidden', which !== 'signed');
   }
   $('showSignup').addEventListener('click', () => { view('signup'); say(''); });
   $('showLogin').addEventListener('click', () => { view('login'); say(''); });
@@ -20,11 +21,10 @@
   // Do not accept arbitrary query redirects. This integration uses implicit email links, not PKCE codes.
   try { client = ProofAuth.client(); }
   catch (e) { busy(true); say(ProofAuth.message(e)); return; }
-  async function showUser() {
+  async function openDashboard() {
     const user = await ProofAuth.confirmedUser(client.auth);
     if (!user) throw new Error('EMAIL_NOT_CONFIRMED');
-    $('accountLabel').textContent = user.email || 'Email confirmed';
-    view('signed');
+    window.location.replace('dashboard.html');
   }
   busy(true);
   (async () => {
@@ -33,8 +33,7 @@
       const { data, error } = await client.auth.getSession();
       if (error) throw error;
       if (data && data.session) {
-        await showUser();
-        if (callbackTokens) say('Email confirmed. You are signed in.', true);
+        await openDashboard();
       } else if (callbackTokens) say('Confirmation could not be completed. The link may have expired; request a new one.');
     } catch (e) { say(ProofAuth.message(e)); }
     finally { busy(false); }
@@ -80,18 +79,8 @@
       const { error } = await client.auth.signInWithPassword({ email: $('loginEmail').value.trim(), password: $('loginPassword').value });
       if (error) throw error;
       $('loginPassword').value = '';
-      await showUser();
-      say('Signed in.', true);
+      await openDashboard();
     } catch (e) { say(ProofAuth.message(e)); }
-    finally { busy(false); }
-  });
-  $('logout').addEventListener('click', async () => {
-    busy(true); say('');
-    try {
-      const { error } = await client.auth.signOut();
-      if (error) throw error;
-      $('accountLabel').textContent = ''; view('login'); say('Signed out.', true);
-    } catch (e) { say('Sign-out failed. Please try again.'); }
     finally { busy(false); }
   });
 })();

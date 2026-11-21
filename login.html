@@ -2,6 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <script>
+    (() => {
+      // Restore a root callback before the auth library runs, without requesting its query from the server.
+      const prefix = '#prooflearn-root=';
+      if (window.location.hash.startsWith(prefix)) {
+        try {
+          const parts = JSON.parse(decodeURIComponent(window.location.hash.slice(prefix.length)));
+          if (Array.isArray(parts) && parts.length === 2 &&
+              typeof parts[0] === 'string' && (parts[0] === '' || parts[0].startsWith('?')) &&
+              typeof parts[1] === 'string' && (parts[1] === '' || parts[1].startsWith('#'))) {
+            const restored = new URL(window.location.href);
+            restored.search = parts[0];
+            restored.hash = parts[1];
+            history.replaceState(null, '', restored.href);
+          }
+        } catch (_) { /* Ignore malformed callback transport. */ }
+      }
+    })();
+  </script>
   <title>ProofLearn | Account access</title>
   <style>
     *{box-sizing:border-box} body{font-family:Arial,sans-serif;background:#f2f5fa;margin:0;padding:20px;color:#102b50}
@@ -11,13 +31,14 @@
     button{padding:12px;border:0;border-radius:7px;background:#102b50;color:white;cursor:pointer;font-size:16px}button[type=submit]{width:100%;margin-top:20px}button:disabled{opacity:.55;cursor:wait}
     .link{background:none;color:#087c6d;padding:4px;text-decoration:underline;font-size:14px}.hidden{display:none}.message{margin-top:16px;line-height:1.4;color:#8c2436}.message.ok{color:#216b39}.small{font-size:13px;line-height:1.5;color:#506174}
   </style>
-  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.min.js" integrity="sha384-z2hqtpr/vSDZ8zSjLOiNgnR/mpU799AD93s6rvkNJLI6Hl0YlKXEhDtREzNT749S" crossorigin="anonymous"></script>
   <script defer src="auth-config.js"></script><script defer src="auth-common.js"></script><script defer src="login-auth.js"></script>
 </head>
 <body><main class="container">
   <div class="logo">Proof<span>Learn</span></div>
   <p class="subtitle">Responsible academic review prototype</p>
-  <p class="small">An account confirms email access only, not lecturer status. The public prototype is not a secure place for real student data.</p>
+  <p id="stagingNotice" class="small" hidden><strong>Staging test only.</strong> Use a test account and never submit real student data.</p>
+  <p class="small">An account confirms email access only, not lecturer status. This prototype is not secure for real student data; use fictional or sample content only.</p>
   <div id="loginSection">
     <h1>Sign in</h1>
     <form id="loginForm"><label for="loginEmail">Email address</label><input type="email" id="loginEmail" autocomplete="email" required>
@@ -35,7 +56,5 @@
       <button type="submit">Create account</button></form>
     <p>Already registered? <button class="link" type="button" id="showLogin">Sign in</button></p>
   </div>
-  <div id="signedInSection" class="hidden"><h1>Signed in</h1><p id="accountLabel"></p><p><a href="index.html">Open public prototype</a></p><button type="button" id="logout">Sign out</button></div>
   <p id="message" class="message" role="status" aria-live="polite"></p>
-  <p class="small"><a href="index.html">Open the public prototype without signing in</a></p>
 </main></body></html>
