@@ -4,7 +4,7 @@
 
 ## What it does
 
-- Uses the official Supabase JavaScript client (pinned CDN version 2.49.8) for email/password signup, login, email confirmation, resending confirmation links, existing sessions, and sign-out on both pages.
+- Uses the official Supabase JavaScript client (pinned CDN version 2.49.8) for email/password signup, login, email confirmation, resending confirmation links, existing sessions, and sign-out on the login page. The public dashboard is unchanged; it does not yet link to or display the account state.
 - Signup uses the fixed callback `https://lighthearted-zabaione-231c73.netlify.app/login.html`. Its implicit-flow token fragment is processed by the SDK; invalid/expired error fragments are removed and a message shown. No arbitrary return URL is accepted.
 - Signup does not claim email was sent for an already-registered address. If signup unexpectedly returns a session (server confirmation is disabled), it attempts local sign-out and reports a configuration error rather than claiming confirmation was required.
 - A validated Supabase user with an `email_confirmed_at` timestamp is needed before the UI reports signed-in status. The Supabase server must enforce confirmation too; browser checks can be bypassed.
@@ -21,4 +21,4 @@
 
 Run `node test-auth.cjs` in this folder (Node.js, no dependencies). Mocked DOM/Supabase scenarios cover missing configuration, signup validation and response, fixed redirect, auto-confirm setup error and local sign-out, rate limits, resend, wrong/unconfirmed login, confirmed login, successful and expired callbacks, login/logout, logout failure and dashboard state. `node --check` was also run on the three auth JS files. These mock tests do not exercise Supabase's SDK initialization or actual browser navigation, network, email delivery, callback token parsing, server policies, existing Netlify settings, or real accounts. No production keys, services, or users were used.
 
-Changes: `login.html`, `index.html`; added `auth-config.js`, `auth-common.js`, `login-auth.js`, `dashboard-auth.js`, `test-auth.cjs`, and this file. Existing prototype review logic is unchanged.
+Changes: `login.html`; added `auth-config.js`, `auth-common.js`, `login-auth.js`, `dashboard-auth.js`, `test-auth.cjs`, and this file. The dashboard integration file is not included in the unchanged `index.html` yet. Existing prototype review logic is unchanged.
