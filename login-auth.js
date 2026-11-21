@@ -1,5 +1,7 @@
 (() => {
   const $ = id => document.getElementById(id);
+  const stagingNotice = $('stagingNotice');
+  if (stagingNotice && window.PROOFLEARN_AUTH.environment === 'staging') stagingNotice.hidden = false;
   const login = $('loginSection'), signup = $('signupSection'), signed = $('signedInSection'), msg = $('message');
   const buttons = [document.querySelector('#loginForm button[type=submit]'), document.querySelector('#signupForm button[type=submit]'), $('logout'), $('resend')];
   const say = (text, ok = false) => { msg.textContent = text; msg.classList.toggle('ok', ok); };
