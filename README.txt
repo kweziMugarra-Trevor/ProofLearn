@@ -1,10 +1,7 @@
 PROOFLEARN PROTOTYPE
 
-Open this folder in Visual Studio Code.
+The root index.html opens the login page. Confirmed accounts reach dashboard.html. The client-side sign-in gate is not server-side security; the files remain publicly accessible. Use fictional or sample data only.
 
-Main file: index.html
-This single HTML file contains the page structure (HTML), styling (CSS), and interactive behavior (JavaScript).
+Authentication is configured only for the exact production and staging origins listed in auth-config.js; local file and localhost origins do not connect to a real project. See AUTH-REVIEW.md for setup, test commands and limitations before deployment.
 
-To view it locally, open index.html in a browser, or use the VS Code Live Server extension if installed.
-
-This is a prototype. Some data and checks are demonstration-only; it is not a secure production system and does not reliably detect AI authorship or verify sources online.
+The prototype does not reliably detect AI authorship or verify sources online.

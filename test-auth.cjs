@@ -17,7 +17,7 @@ async function app(opts = {}) {
   elements.signupSection.classes.add('hidden'); elements.signedInSection.classes.add('hidden'); elements.dashboardLogout.hidden = true;
   const loginButton = new Element(), signupButton = new Element();
   let session = opts.session || null, user = opts.user || { email:'person@example.org', email_confirmed_at:'2026-01-01T00:00:00Z' };
-  let calls = [], removedFragment = false;
+  let calls = [], removedFragment = false, navigation = [];
   const auth = {
     getSession: async () => ({data:{session}, error:opts.sessionError || null}),
     getUser: async () => ({data:{user}, error:opts.userError || null}),
@@ -26,33 +26,38 @@ async function app(opts = {}) {
     signInWithPassword: async args => { calls.push(['signIn',args]); if (!opts.loginError) session={access_token:'mock'}; return {data:{session},error:opts.loginError || null}; },
     signOut: async args => { calls.push(['signOut',args]); if (!opts.logoutError) session=null; return {error:opts.logoutError || null}; }
   };
-  const location = {hash:opts.hash || '',pathname:'/login.html',search:''};
-  const window = { location, PROOFLEARN_AUTH: {url:'https://zsovgligvblsbzutyxgr.supabase.co',publishableKey:opts.noKey ? 'REPLACE_WITH_SUPABASE_PUBLISHABLE_KEY' : 'sb_publishable_test',emailRedirectTo:'https://lighthearted-zabaione-231c73.netlify.app/login.html'}, supabase:{createClient:(url,key,config)=>{ calls.push(['createClient', url, key, config]); return {auth}; }} };
-  const document = {getElementById:id => elements[id], querySelector:q => q.startsWith('#loginForm') ? loginButton : signupButton};
+  const location = {hash:opts.hash || '',pathname:opts.dashboard ? '/dashboard.html' : '/login.html',search:opts.search || '',replace: url => navigation.push(url)};
+  const window = { location, PROOFLEARN_AUTH: {url:'https://zsovgligvblsbzutyxgr.supabase.co',publishableKey:opts.noKey ? 'REPLACE_WITH_SUPABASE_PUBLISHABLE_KEY' : 'sb_publishable_test',emailRedirectTo:'https://prooflearn-muni.netlify.app/login.html'}, supabase:{createClient:(url,key,config)=>{ calls.push(['createClient', url, key, config]); return {auth}; }} };
+  const rootClasses = new Set();
+  const document = {documentElement:{classList:{add: c => rootClasses.add(c), remove: c => rootClasses.delete(c)}}, getElementById:id => elements[id], querySelector:q => q.startsWith('#loginForm') ? loginButton : signupButton};
   const ctx = {window, document, history:{replaceState:()=>{removedFragment=true;}}, URLSearchParams, console};
   vm.createContext(ctx);
   vm.runInContext(fs.readFileSync(path.join(root,'auth-common.js'),'utf8'),ctx);
   ctx.ProofAuth=window.ProofAuth;
   vm.runInContext(fs.readFileSync(path.join(root,opts.dashboard ? 'dashboard-auth.js' : 'login-auth.js'),'utf8'),ctx);
   await tick();
-  return {e:elements,calls,removedFragment,loginButton};
+  return {e:elements,calls,removedFragment,loginButton,navigation,rootClasses};
 }
 (async()=>{
   let a = await app({noKey:true}); assert.match(a.e.message.textContent,/not configured/i); assert.equal(a.loginButton.disabled,true);
   a = await app(); a.e.fullName.value='Trevor'; a.e.signupEmail.value='test@example.org'; a.e.signupPassword.value='password1'; a.e.confirmPassword.value='different'; await a.e.signupForm.fire('submit'); assert.match(a.e.message.textContent,/do not match/); assert.equal(a.calls.filter(x=>x[0]==='signUp').length,0);
-  a.e.confirmPassword.value='password1'; await a.e.signupForm.fire('submit'); let signup=a.calls.find(x=>x[0]==='signUp')[1]; assert.equal(signup.options.emailRedirectTo,'https://lighthearted-zabaione-231c73.netlify.app/login.html'); assert.match(a.e.message.textContent,/check your inbox/i); assert.equal(a.e.signupPassword.value,'');
+  a.e.confirmPassword.value='password1'; await a.e.signupForm.fire('submit'); let signup=a.calls.find(x=>x[0]==='signUp')[1]; assert.equal(signup.options.emailRedirectTo,'https://prooflearn-muni.netlify.app/login.html'); assert.match(a.e.message.textContent,/check your inbox/i); assert.equal(a.e.signupPassword.value,'');
   a = await app({autoConfirm:true}); a.e.fullName.value='Test'; a.e.signupPassword.value=a.e.confirmPassword.value='password1'; await a.e.signupForm.fire('submit'); assert.match(a.e.message.textContent,/setup error/i); assert.equal(a.calls.find(x=>x[0]==='signOut')[1].scope,'local');
   a = await app({signupError:{code:'over_email_send_rate_limit',status:429}}); a.e.fullName.value='Test'; a.e.signupPassword.value=a.e.confirmPassword.value='password1'; await a.e.signupForm.fire('submit'); assert.match(a.e.message.textContent,/too many/i);
-  a = await app(); await a.e.resend.fire('click'); assert.match(a.e.message.textContent,/valid email/i); a.e.loginEmail.value='test@example.org'; await a.e.resend.fire('click'); assert.equal(a.calls.find(x=>x[0]==='resend')[1].options.emailRedirectTo,'https://lighthearted-zabaione-231c73.netlify.app/login.html');
+  a = await app(); await a.e.resend.fire('click'); assert.match(a.e.message.textContent,/valid email/i); a.e.loginEmail.value='test@example.org'; await a.e.resend.fire('click'); assert.equal(a.calls.find(x=>x[0]==='resend')[1].options.emailRedirectTo,'https://prooflearn-muni.netlify.app/login.html');
   a = await app({loginError:{code:'invalid_credentials'}}); await a.e.loginForm.fire('submit'); assert.match(a.e.message.textContent,/incorrect/i);
   a = await app({loginError:{code:'email_not_confirmed'}}); await a.e.loginForm.fire('submit'); assert.match(a.e.message.textContent,/confirm your email/i);
-  a = await app(); await a.e.loginForm.fire('submit'); assert.equal(a.e.accountLabel.textContent,'person@example.org'); assert.equal(a.e.signedInSection.classes.has('hidden'),false); await a.e.logout.fire('click'); assert.match(a.e.message.textContent,/signed out/i);
-  a = await app({user:{email:'x',email_confirmed_at:null}}); await a.e.loginForm.fire('submit'); assert.match(a.e.message.textContent,/confirm your email/i); assert.equal(a.e.signedInSection.classes.has('hidden'),true);
-  a = await app({session:{access_token:'mock'},hash:'#access_token=mock&refresh_token=mock'}); assert.match(a.e.message.textContent,/email confirmed/i);
-  a = await app({hash:'#error=access_denied&error_code=otp_expired'}); assert.equal(a.removedFragment,true); assert.match(a.e.message.textContent,/expired/i);
-  a = await app({hash:'#access_token=bad'}); assert.match(a.e.message.textContent,/could not be completed/i);
-  a = await app({session:{access_token:'mock'},logoutError:{message:'network'}}); await a.e.logout.fire('click'); assert.match(a.e.message.textContent,/sign-out failed/i); assert.equal(a.e.signedInSection.classes.has('hidden'),false);
-  a = await app({dashboard:true,session:{access_token:'mock'}}); assert.match(a.e.authStatus.textContent,/signed in/i); assert.equal(a.e.dashboardLogout.hidden,false); await a.e.dashboardLogout.fire('click'); assert.match(a.e.authStatus.textContent,/signed out/i); assert.equal(a.e.authLink.hidden,false);
-  a = await app({dashboard:true}); assert.match(a.e.authStatus.textContent,/public prototype/i);
-  console.log('PASS: 15 mock scenarios (setup, validation, signup, rate limit, auto-confirm, login, email confirmation, callbacks, logout, dashboard).');
+  a = await app({search:'?next=https://evil.example'}); await a.e.loginForm.fire('submit'); assert.deepEqual(a.navigation,['dashboard.html']);
+  a = await app({user:{email:'x',email_confirmed_at:null}}); await a.e.loginForm.fire('submit'); assert.match(a.e.message.textContent,/confirm your email/i); assert.deepEqual(a.navigation,[]);
+  a = await app({session:{access_token:'mock'}}); assert.deepEqual(a.navigation,['dashboard.html']);
+  a = await app({session:{access_token:'mock'},hash:'#access_token=mock&refresh_token=mock'}); assert.deepEqual(a.navigation,['dashboard.html']);
+  a = await app({hash:'#error=access_denied&error_code=otp_expired'}); assert.equal(a.removedFragment,true); assert.match(a.e.message.textContent,/expired/i); assert.deepEqual(a.navigation,[]);
+  a = await app({hash:'#access_token=bad'}); assert.match(a.e.message.textContent,/could not be completed/i); assert.deepEqual(a.navigation,[]);
+  a = await app({session:{access_token:'mock'},userError:{message:'network'}}); assert.deepEqual(a.navigation,[]);
+  a = await app({dashboard:true,session:{access_token:'mock'}}); assert.match(a.e.authStatus.textContent,/signed in/i); assert.equal(a.e.dashboardLogout.hidden,false); assert.equal(a.rootClasses.has('auth-ready'),true); await a.e.dashboardLogout.fire('click'); assert.deepEqual(a.navigation,['login.html']); assert.equal(a.rootClasses.has('auth-ready'),false);
+  a = await app({dashboard:true,session:{access_token:'mock'},logoutError:{message:'network'}}); await a.e.dashboardLogout.fire('click'); assert.match(a.e.authStatus.textContent,/sign-out failed/i); assert.deepEqual(a.navigation,[]); assert.equal(a.rootClasses.has('auth-ready'),true);
+  for (const opts of [{}, {noKey:true}, {sessionError:{message:'network'}}, {session:{access_token:'mock'},user:{email:'x',email_confirmed_at:null}}, {session:{access_token:'mock'},userError:{message:'network'}}]) { a=await app({dashboard:true,...opts}); assert.deepEqual(a.navigation,['login.html']); assert.equal(a.rootClasses.has('auth-ready'),false); }
+  const index=fs.readFileSync(path.join(root,'index.html'),'utf8'), loginHtml=fs.readFileSync(path.join(root,'login.html'),'utf8'), dash=fs.readFileSync(path.join(root,'dashboard.html'),'utf8');
+  assert.match(index,/location\.replace\('login\.html'\)/); assert.match(index,/url=login\.html/); assert.doesNotMatch(loginHtml,/without signing in|Open public prototype/i); assert.match(dash,/id="dashboardLogout"/); assert.match(dash,/html:not\(\.auth-ready\) \.app/); assert.match(dash,/sample data only/i); assert.match(dash,/id="sample"/); assert.match(dash,/window\.extractPdfText/);
+  console.log('PASS: mocked signup, confirmation, login, session, callback, logout, guard and static page checks.');
 })().catch(err=>{console.error(err);process.exit(1);});
