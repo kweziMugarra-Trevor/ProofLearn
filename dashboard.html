@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#102746">
     <title>ProofLearn | Lecturer Workspace</title>
     <link rel="stylesheet" href="style.css">
-    <style>html:not(.auth-ready) .app, html:not(.auth-ready) #toast { display:none; }</style>
+    <style>html:not(.auth-ready) .app, html:not(.auth-ready) #toast { display:none; } @media print { .report.hidden { display:none !important; } }</style>
     <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.min.js" integrity="sha384-z2hqtpr/vSDZ8zSjLOiNgnR/mpU799AD93s6rvkNJLI6Hl0YlKXEhDtREzNT749S" crossorigin="anonymous"></script>
     <script defer src="auth-config.js"></script>
     <script defer src="auth-common.js"></script>
@@ -111,7 +111,7 @@
                 <div class="notice"><b>i</b>
                     <p><b>Privacy note:</b> this one-file prototype processes text in your browser only. It does not
                         send text to an AI service or save it to a server. Do not enter real student personal
-                        information.</p>
+                        information. Clear removes generated reviews on this page, not previously downloaded, copied or printed files.</p>
                 </div>
                 <form class="panel form" id="form">
                     <div class="formgrid">
@@ -261,8 +261,24 @@
             const dropZone = $('fileDropZone');
             const fileStatus = $('fileStatus');
 
+            const initialFileStatus = 'You can paste text above or drop a document into this section.';
+            let importVersion = 0;
+            let importPending = false;
+            function cancelImport() { const pending = importPending; importVersion++; importPending = false; return pending; }
+            function clearReport() {
+                current = null;
+                $('report').classList.add('hidden');
+                $('reportTitle').textContent = 'Assignment report';
+                $('meta').textContent = '';
+                $('findings').replaceChildren();
+                $('questions').replaceChildren();
+                $('notes').value = '';
+            }
             async function loadDocument(file) {
+                const version = ++importVersion;
+                importPending = false;
                 if (!file) return;
+                clearReport();
 
                 if (file.size > 10 * 1024 * 1024) {
                     fileStatus.textContent = 'Please choose a file smaller than 10 MB.';
@@ -270,6 +286,8 @@
                 }
 
                 const extension = file.name.split('.').pop().toLowerCase();
+                importPending = true;
+                fileStatus.textContent = 'Reading document…';
 
                 try {
                     let extractedText = '';
@@ -290,6 +308,7 @@
                         throw new Error('Choose a .docx or .pdf file.');
                     }
 
+                    if (version !== importVersion) return;
                     if (!extractedText.trim()) {
                         throw new Error(
                             'No readable text was found. The PDF may be scanned or image-only.'
@@ -300,7 +319,10 @@
                     fileStatus.textContent =
                         `${file.name} loaded. Check the text, then generate the report.`;
                 } catch (error) {
+                    if (version !== importVersion) return;
                     fileStatus.textContent = error.message;
+                } finally {
+                    if (version === importVersion) importPending = false;
                 }
             }
 
@@ -360,6 +382,10 @@
             }
 
             $('sample').onclick = () => {
+                cancelImport();
+                clearReport();
+                fileInput.value = '';
+                fileStatus.textContent = initialFileStatus;
                 $('student').value = 'DEMO-004';
                 $('title').value = 'Explain two learning theories';
                 $('instructions').value =
@@ -461,6 +487,7 @@
 
             $('form').onsubmit = e => {
                 e.preventDefault();
+                if (cancelImport()) fileStatus.textContent = 'Document import cancelled. Load the file again if needed.';
 
                 let title = $('title').value.trim();
                 let t = $('text').value.trim();
@@ -526,7 +553,7 @@
                 $('questionCount').textContent = String(qCount).padStart(2, '0');
 
                 let row = document.createElement('div');
-                row.className = 'review-row';
+                row.className = 'review-row generated-review';
                 row.innerHTML =
                     '<div class="doc">DOC</div><div class="review-info"><b></b><small></small></div><span class="status">Review generated</span>';
 
@@ -547,10 +574,22 @@
                 if (current) current.notes = $('notes').value;
             };
 
-            $('clear').onclick = () =>
-                setTimeout(() => $('report').classList.add('hidden'), 0);
-
-            $('print').onclick = () => window.print();
+            $('form').addEventListener('reset', () => {
+                cancelImport();
+                clearReport();
+                fileStatus.textContent = initialFileStatus;
+                $('recent').querySelectorAll('.generated-review').forEach(row => row.remove());
+                reviews = 0; qCount = 0;
+                $('reviewCount').textContent = '00';
+                $('questionCount').textContent = '00';
+            });
+            ['student', 'title', 'instructions', 'text'].forEach(id => {
+                $(id).addEventListener('input', () => {
+                    if (id === 'text' && cancelImport()) fileStatus.textContent = 'Document import cancelled because text changed.';
+                    clearReport();
+                });
+            });
+            $('print').onclick = () => { if (current) window.print(); };
 
             $('copy').onclick = async () => {
                 if (!current) return;
