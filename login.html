@@ -2,6 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <script>
+    (() => {
+      // Restore a root callback before the auth library runs, without requesting its query from the server.
+      const prefix = '#prooflearn-root=';
+      if (window.location.hash.startsWith(prefix)) {
+        try {
+          const parts = JSON.parse(decodeURIComponent(window.location.hash.slice(prefix.length)));
+          if (Array.isArray(parts) && parts.length === 2 &&
+              typeof parts[0] === 'string' && (parts[0] === '' || parts[0].startsWith('?')) &&
+              typeof parts[1] === 'string' && (parts[1] === '' || parts[1].startsWith('#'))) {
+            const restored = new URL(window.location.href);
+            restored.search = parts[0];
+            restored.hash = parts[1];
+            history.replaceState(null, '', restored.href);
+          }
+        } catch (_) { /* Ignore malformed callback transport. */ }
+      }
+    })();
+  </script>
   <title>ProofLearn | Account access</title>
   <style>
     *{box-sizing:border-box} body{font-family:Arial,sans-serif;background:#f2f5fa;margin:0;padding:20px;color:#102b50}
