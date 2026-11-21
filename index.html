@@ -4,8 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>ProofLearn | Sign in</title>
-  <meta http-equiv="refresh" content="0; url=login.html">
-  <script>window.location.replace('login.html');</script>
+  <meta name="referrer" content="no-referrer">
+  <script>
+    (() => {
+      // Fragments are not sent to the server. Carry any query there too, until login restores it.
+      const callback = [window.location.search, window.location.hash];
+      const fragment = callback[0]
+        ? '#prooflearn-root=' + encodeURIComponent(JSON.stringify(callback))
+        : callback[1];
+      window.location.replace('login.html' + fragment);
+    })();
+  </script>
 </head>
 <body><p>Continue to <a href="login.html">ProofLearn sign in</a>.</p></body>
 </html>
